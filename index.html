@@ -79,14 +79,14 @@
             // * * * * * * validates the form * * * * * * //
             function validateForm() {
                 console.log("inside validateForm() function");
-
-                if ($("#city").val() == "") {
-                    addCSS("#city");
+                
+                if ($("#street_address").val() == "") {
+                    addCSS("#street_address");
                     return false;
                 }
 
-                if ($("#street_address").val() == "") {
-                    addCSS("#street_address");
+                if ($("#city").val() == "") {
+                    addCSS("#city");
                     return false;
                 }
 
@@ -189,7 +189,7 @@
                         console.log(result);
 
                         hospitals_object = JSON.parse(result);
-                        
+
                         var str_hosp_info = "<b>Hospital Contact Information: </b> <br><br>";
 
                         // add hospital contact info to page and markers to map
@@ -197,35 +197,23 @@
                             
                             var website_link = hospitals_object.hospitals[i].website;
 
-                            str_hosp_info   += "<b>"
-                                            + hospitals_object.hospitals[i].name
-                                            + "</b><br>"
-                                            + hospitals_object.hospitals[i].address
-                                            + "<br>"
-                                            + hospitals_object.hospitals[i].city
-                                            + ", "
-                                            + hospitals_object.hospitals[i].state
-                                            + ", "
-                                            + hospitals_object.hospitals[i].zip
-                                            + "<br>"
-                                            + "<a href='" + website_link + "'target='_blank'> Website link </a>"
-                                            + "<br> <br>";
+                            let info_window_text =  "<b>"
+                                                + hospitals_object.hospitals[i].name
+                                                + "</b><br>"
+                                                + hospitals_object.hospitals[i].address
+                                                + "<br>"
+                                                + hospitals_object.hospitals[i].city
+                                                + ", "
+                                                + hospitals_object.hospitals[i].state
+                                                + ", "
+                                                + hospitals_object.hospitals[i].zip
+                                                + "<br>"
+                                                + "<a href='" + website_link + "'target='_blank'> Website link </a>";
+
+                            str_hosp_info += info_window_text + "<br> <br>";
 
                             document.getElementById("hospital").innerHTML = str_hosp_info;
 
-                            var info_window_text  =  "<b>"
-                                                    + hospitals_object.hospitals[i].name
-                                                    + "</b><br>"
-                                                    + hospitals_object.hospitals[i].address
-                                                    + "<br>"
-                                                    + hospitals_object.hospitals[i].city
-                                                    + ", "
-                                                    + hospitals_object.hospitals[i].state
-                                                    + ", "
-                                                    + hospitals_object.hospitals[i].zip
-                                                    + "<br>"
-                                                    + "<a href='" + website_link + "'target='_blank'> Website link </a>";
-                        
                             // add a marker
                             var marker = new google.maps.Marker({
                                 position: { lat: parseFloat(hospitals_object.hospitals[i].latitude), lng: parseFloat(hospitals_object.hospitals[i].longitude) },
@@ -237,14 +225,11 @@
                             var infowindow = new google.maps.InfoWindow()
                             
                             // when marker is clicked, show info window
-                            marker.addListener('click', function (info_window_text) {
-                                return function () {
-                                    infowindow.setContent(info_window_text);
-                                    infowindow.open(map, this);
-                                }
-                            }(info_window_text));
-
-
+                            marker.addListener('click', function() {
+                                infowindow.setContent(info_window_text);
+                                infowindow.open(map, this);
+                            });
+                            
                             // when clicked anywhere on map, close info window
                             map.addListener('click', function() {
                                 infowindow.close();
