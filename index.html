@@ -1,0 +1,324 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>PPE for Hospitals</title>
+
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                margin: 50px 50px;
+                font-size: 15px;
+            }
+            .field_title {
+                font-weight: bold;
+                margin-bottom: 3px;
+                font-size: 15px;
+                
+            }
+
+            #map {
+                height: 100%;
+            }
+
+        </style>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        
+        <!-- calls the map immediately and runs the initMap function -->
+     
+
+
+    </head>
+
+    <body>
+        <script language="javascript">
+            
+            // * * * * * * populate dropdown of US States and Territories * * * * * * //
+            var dropdown = "<select name='state_name' id='state_name'>";
+            $(document).ready(
+                function () {
+                    var states = [
+                        'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
+                        'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
+                        'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
+                        'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
+                        'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
+                    ];
+
+                    states.sort();
+
+                    // start with dummy option
+                    dropdown += "<option value= 'select a state'> select a state </option>";
+
+                    $.each(states, function (key, value) {
+                        dropdown += "<option value=" + value + ">" + value + "</option>";
+                    })
+
+                    // close the select tag
+                    dropdown += "</select>";
+
+                    // add the dropdown as an HTML string
+                    var selected_state = $('#states').html(dropdown);
+                    console.log(selected_state);
+                    
+                }
+            );
+
+            // * * * * * * adds CSS to the improperly-filled input field * * * * * * //       
+            function addCSS(ID) {
+                
+                $(ID).css({
+                    "border": "2px solid red",
+                });
+
+                if (ID != "#state_name") {
+                    $(ID).focus();
+                }
+            }
+
+            // * * * * * * validates the form * * * * * * //
+            function validateForm() {
+                console.log("inside validateForm() function");
+
+                if ($("#city").val() == "") {
+                    addCSS("#city");
+                    return false;
+                }
+
+                if ($("#street_address").val() == "") {
+                    addCSS("#street_address");
+                    return false;
+                }
+
+                if ($("#state_name").val() == "select a state") {
+                    addCSS("#state_name");
+                    return false;
+                }
+
+                if ($("#zip").val() == "") {
+                    addCSS("#zip");
+                    return false;
+                }
+
+                return true;
+            }
+
+
+            // * * * * * * gets the user-inputted data from the form * * * * * * //
+            var num_hospitals = 0;
+
+            function getUserInput() {
+               
+                console.log("validation passed!");
+
+                //get the values from all form fields
+                var state_picked = $("#state_name").val();
+                var street_entered = $("#street_address").val();
+                var city_entered = $("#city").val();
+                var zip = $("#zip").val();
+                num_hospitals = $("#n_hospitals").val();
+                var address = street_entered + "," + city_entered +  "," + state_picked + "," + zip;
+
+                return address;
+            }
+
+
+            // * * * * * * Load the map * * * * * * //
+            var map;
+            function initMap() {
+                console.log("inside initMap");
+                
+                     map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 3,
+                        center: {lat: 39.5, lng: - 98.35}
+                    
+                    });
+
+                    var geocoder = new google.maps.Geocoder();
+
+                    document.getElementById('button').addEventListener('click', function () {
+                        if (validateForm()) {
+                            
+                            var address = getUserInput();
+
+                            geocodeAddress(geocoder, map, address);
+
+                        }else {
+                            alert("Please fill any missing fields in the form")
+                            return;
+                        }
+                       
+                        
+                    });
+                }
+
+            // * * * * * * Geocode address provided by user through form * * * * * * //
+            function geocodeAddress(geocoder, resultsMap, address) {
+                console.log("inside geocodeAddress", address);
+                
+                geocoder.geocode({ 'address': address }, function (results, status) {
+                    if (status === 'OK') {
+                        
+                        // get the lat and long coordinates
+                        var latlong = results[0].geometry.location;
+                        var lat = latlong.lat();
+                        var long = latlong.lng();
+
+                        // get n closest hospitals
+                        getHospitals(lat, long, num_hospitals);
+
+                    } else {
+                        alert('Geocode was not successful for the following reason: ' + status);
+                    }
+                });
+            }
+
+            // * * * * * * gets a list of hospitals from the database * * * * * * //
+            function getHospitals(lat_value, long_value, num_hospitals) {                
+                request = new XMLHttpRequest();
+
+                request.open("GET", "https://ppe-api.herokuapp.com/queryhospitals?lat=" + lat_value + "&lon=" + long_value + "&n=" + num_hospitals, true);
+                
+                request.send();
+                
+                request.onreadystatechange = function () {
+
+                    if (request.readyState == 4 && request.status == 200) {
+
+                        result = request.responseText;
+                        console.log(result);
+
+                        hospitals_object = JSON.parse(result);
+                        
+                        var str_hosp_info = "<b>Hospital Contact Information: </b> <br><br>";
+
+                        // add hospital contact info to page and markers to map
+                        for (i in hospitals_object.hospitals) {
+                            
+                            var website_link = hospitals_object.hospitals[i].website;
+
+                            str_hosp_info   += "<b>"
+                                            + hospitals_object.hospitals[i].name
+                                            + "</b><br>"
+                                            + hospitals_object.hospitals[i].address
+                                            + "<br>"
+                                            + hospitals_object.hospitals[i].city
+                                            + ", "
+                                            + hospitals_object.hospitals[i].state
+                                            + ", "
+                                            + hospitals_object.hospitals[i].zip
+                                            + "<br>"
+                                            + "<a href='" + website_link + "'target='_blank'> Website link </a>"
+                                            + "<br> <br>";
+
+                            document.getElementById("hospital").innerHTML = str_hosp_info;
+
+                            var info_window_text  =  "<b>"
+                                                    + hospitals_object.hospitals[i].name
+                                                    + "</b><br>"
+                                                    + hospitals_object.hospitals[i].address
+                                                    + "<br>"
+                                                    + hospitals_object.hospitals[i].city
+                                                    + ", "
+                                                    + hospitals_object.hospitals[i].state
+                                                    + ", "
+                                                    + hospitals_object.hospitals[i].zip
+                                                    + "<br>"
+                                                    + "<a href='" + website_link + "'target='_blank'> Website link </a>";
+                        
+                            // add a marker
+                            var marker = new google.maps.Marker({
+                                position: { lat: parseFloat(hospitals_object.hospitals[i].latitude), lng: parseFloat(hospitals_object.hospitals[i].longitude) },
+                                icon: "./hospital-icon-1x.png",
+                                map: map
+                            });
+
+                            // add an info window with information about a specific hospital
+                            var infowindow = new google.maps.InfoWindow()
+                            
+                            // when marker is clicked, show info window
+                            marker.addListener('click', function (info_window_text) {
+                                return function () {
+                                    infowindow.setContent(info_window_text);
+                                    infowindow.open(map, this);
+                                }
+                            }(info_window_text));
+
+
+                            // when clicked anywhere on map, close info window
+                            map.addListener('click', function() {
+                                infowindow.close();
+                            });
+                        }
+
+                        // add marker for user's location - for relative context/usability
+                        var marker_user = new google.maps.Marker({
+                            position: { lat: parseFloat(lat_value), lng: parseFloat(long_value)},
+                            icon: "./you-are-here2.png",
+                            map: map
+                        });
+
+                        // position the map to the user's location, update zoom to be closer
+                        map.panTo(marker_user.position);
+                        map.setZoom(12);
+
+                    } else if (request.readyState == 4 && request.status != 200) {
+                        document.getElementById("hospital").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
+                    
+                    } else if (request.readyState == 3) {
+                        document.getElementById("hospital").innerHTML = "Too soon!  Try again";
+                    }
+                }
+            }
+
+        </script>
+
+    
+
+        <h1>PPE for Hospitals</h1>
+
+        <form name="numbers-form" > 
+            <!-- onsubmit="return getUserInput()" method="GET" -->
+
+            <p style="width: 500px">
+                <b>Instructions</b>: <br />
+                Please provide your address in the fields below to get contact information of the three hospitals nearest to you.<br />
+                All fields are required.
+            </p>
+
+            <p class="field_title">Street Address&#42;</p>
+                <input id="street_address" name="street_address" value="45 Pinkham Rd">
+
+            <p class="field_title">City&#42;</p>
+                <input id="city" name="city" value="Medford">
+
+            <p class="field_title">State&#42;</p>
+                <div id="states"></div>
+
+            <p class="field_title">Zip Code&#42;</p>
+                <input id="zip" name="zip" value="02155">
+
+            <p class="field_title">Number of Hospitals&#42;</p>
+                <input id="n_hospitals" name="n_hospitals" value="3">
+
+            <br/><br />
+
+            <!-- submit -->
+            <input id="button" type="button" value="View Results" >
+                <!-- onclick="getUserInput()" -->
+
+
+        </form>
+
+        <div id="hospital"><br><br><br></div>
+        <br><br>
+
+        <div id="map" style="width: 60%; max-width: 700px; height: 400px;"></div>
+
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I&callback=initMap">
+        </script>
+    </body>
+
+
+</html>
