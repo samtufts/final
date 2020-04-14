@@ -2,25 +2,8 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <title>PPE for Hospitals</title>
-
-        <style>
-            body {
-                font-family: Arial, Helvetica, sans-serif;
-                margin: 50px 50px;
-                font-size: 15px;
-            }
-            .field_title {
-                font-weight: bold;
-                margin-bottom: 3px;
-                font-size: 15px;
-                
-            }
-
-            #map {
-                height: 100%;
-            }
-
-        </style>
+        <link rel="stylesheet" href="style.css">
+        
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         
@@ -226,6 +209,7 @@
                             
                             // when marker is clicked, show info window
                             marker.addListener('click', function() {
+                                // clear existing markers ****
                                 infowindow.setContent(info_window_text);
                                 infowindow.open(map, this);
                             });
@@ -261,44 +245,45 @@
     
 
         <h1>PPE for Hospitals</h1>
+    
+    <div class="flex-container">
+        <div>
+            <form name="numbers-form" > 
+                <p style="width: 500px">
+                    <b>Instructions</b>: <br />
+                    Please provide your address in the fields below to get contact information of the three hospitals nearest to you.<br />
+                    All fields are required.
+                </p>
 
-        <form name="numbers-form" > 
-            <!-- onsubmit="return getUserInput()" method="GET" -->
+                <p class="field_title">Street Address&#42;</p>
+                    <input id="street_address" name="street_address" value="45 Pinkham Rd">
 
-            <p style="width: 500px">
-                <b>Instructions</b>: <br />
-                Please provide your address in the fields below to get contact information of the three hospitals nearest to you.<br />
-                All fields are required.
-            </p>
+                <p class="field_title">City&#42;</p>
+                    <input id="city" name="city" value="Medford">
 
-            <p class="field_title">Street Address&#42;</p>
-                <input id="street_address" name="street_address" value="45 Pinkham Rd">
+                <p class="field_title">State&#42;</p>
+                    <div id="states"></div>
 
-            <p class="field_title">City&#42;</p>
-                <input id="city" name="city" value="Medford">
+                <p class="field_title">Zip Code&#42;</p>
+                    <input id="zip" name="zip" value="02155">
 
-            <p class="field_title">State&#42;</p>
-                <div id="states"></div>
+                <p class="field_title">Number of Hospitals&#42;</p>
+                    <input id="n_hospitals" name="n_hospitals" value="3">
 
-            <p class="field_title">Zip Code&#42;</p>
-                <input id="zip" name="zip" value="02155">
+                <br/><br />
 
-            <p class="field_title">Number of Hospitals&#42;</p>
-                <input id="n_hospitals" name="n_hospitals" value="3">
-
-            <br/><br />
-
-            <!-- submit -->
-            <input id="button" type="button" value="View Results" >
-                <!-- onclick="getUserInput()" -->
-
-
-        </form>
-
-        <div id="hospital"><br><br><br></div>
-        <br><br>
+                <!-- submit -->
+                <input id="button" type="button" value="View Results" >
+                    <!-- onclick="getUserInput()" -->
+            </form>
+        </div>
 
         <div id="map" style="width: 60%; max-width: 700px; height: 400px;"></div>
+
+    </div>
+        
+        <div id="hospital"></div>
+        
 
         <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I&callback=initMap">
