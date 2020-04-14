@@ -20,5 +20,5 @@ body {
     .flex-container {
         display: flex;
         margin: 30px;
-        height: 600px;
+/*         height: 600px; */
     }
