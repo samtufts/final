@@ -20,8 +20,18 @@ body {
     overflow: hidden;
     background-size: cover;
     width: 100%;
+    position: relative;
+    text-align: center;
     background-image: url('maks.jpg');
 }
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 
 #map {
     height: 100%;
