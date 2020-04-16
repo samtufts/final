@@ -36,7 +36,18 @@ h1 {
     text-align: center;
 }
 
-.box {
+.box1 {
+    float:center;
+    display: flex;
+    flex-direction: row;
+    width: 20%;
+    padding-top: 1%;
+    display: inline-block;
+    padding: 15 32;
+    margin: 20px;
+}
+
+.box2 {
     float:center;
     display: flex;
     flex-direction: row;
