@@ -19,6 +19,7 @@ body {
     color: white;
     overflow: hidden;
     background-size: cover;
+    width: 100%;
     background-image: url('maks.jpg');
 }
 
