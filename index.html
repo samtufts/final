@@ -3,19 +3,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <title>PPE for Hospitals</title>
         <link rel="stylesheet" href="style.css">
-        
-
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        
-        <!-- calls the map immediately and runs the initMap function -->
-     
-
-
     </head>
 
     <body>
         <script language="javascript">
-            
+        
             // * * * * * * populate dropdown of US States and Territories * * * * * * //
             var dropdown = "<select name='state_name' id='state_name'>";
             $(document).ready(
@@ -28,6 +21,7 @@
                         'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
                     ];
 
+                    // sort the array of states
                     states.sort();
 
                     // start with dummy option
@@ -42,8 +36,6 @@
 
                     // add the dropdown as an HTML string
                     var selected_state = $('#states').html(dropdown);
-                    console.log(selected_state);
-                    
                 }
             );
 
@@ -89,6 +81,7 @@
 
             // * * * * * * gets the user-inputted data from the form * * * * * * //
             var num_hospitals = 0;
+            var email = "";
 
             function getUserInput() {
                
@@ -101,7 +94,9 @@
                 var zip = $("#zip").val();
                 num_hospitals = $("#n_hospitals").val();
                 var address = street_entered + "," + city_entered +  "," + state_picked + "," + zip;
-
+                email = $("#email-address").val();
+                console.log(email);
+                
                 return address;
             }
 
@@ -114,7 +109,6 @@
                      map = new google.maps.Map(document.getElementById('map'), {
                         zoom: 3,
                         center: {lat: 39.5, lng: - 98.35}
-                    
                     });
 
                     var geocoder = new google.maps.Geocoder();
@@ -123,16 +117,18 @@
                         if (validateForm()) {
                             
                             var address = getUserInput();
-
+                            console.log("address", address);
+                            
                             geocodeAddress(geocoder, map, address);
 
                         }else {
                             alert("Please fill any missing fields in the form")
                             return;
                         }
-                       
-                        
                     });
+
+                    //reset address for next click
+                    address = "";
                 }
 
             // * * * * * * Geocode address provided by user through form * * * * * * //
@@ -151,7 +147,8 @@
                         getHospitals(lat, long, num_hospitals);
 
                     } else {
-                        alert('Geocode was not successful for the following reason: ' + status);
+                        // alert('Geocode was not successful for the following reason: ' + status);
+                        alert("Sorry, the address you entered is not valid. Please try again.")
                     }
                 });
             }
@@ -180,7 +177,7 @@
                             
                             var website_link = hospitals_object.hospitals[i].website;
 
-                            let info_window_text =  "<b>"
+                            let info_window_text = "<b>"
                                                 + hospitals_object.hospitals[i].name
                                                 + "</b><br>"
                                                 + hospitals_object.hospitals[i].address
@@ -188,14 +185,12 @@
                                                 + hospitals_object.hospitals[i].city
                                                 + ", "
                                                 + hospitals_object.hospitals[i].state
-                                                + ", "
+                                                + ","
                                                 + hospitals_object.hospitals[i].zip
                                                 + "<br>"
                                                 + "<a href='" + website_link + "'target='_blank'> Website link </a>";
 
                             str_hosp_info += info_window_text + "<br> <br>";
-
-                            document.getElementById("hospital").innerHTML = str_hosp_info;
 
                             // add a marker
                             var marker = new google.maps.Marker({
@@ -209,7 +204,6 @@
                             
                             // when marker is clicked, show info window
                             marker.addListener('click', function() {
-                                // clear existing markers ****
                                 infowindow.setContent(info_window_text);
                                 infowindow.open(map, this);
                             });
@@ -220,6 +214,8 @@
                             });
                         }
 
+                        document.getElementById("hospital").innerHTML = str_hosp_info;
+                        
                         // add marker for user's location - for relative context/usability
                         var marker_user = new google.maps.Marker({
                             position: { lat: parseFloat(lat_value), lng: parseFloat(long_value)},
@@ -270,9 +266,11 @@
                 <p class="field_title">Number of Hospitals&#42;</p>
                     <input id="n_hospitals" name="n_hospitals" value="3">
 
+                <p class="field_title">Email (to save results)</p>
+                <input id="email-address" name="email-address" value="sam.ewenczyk@gmail.com">
+
                 <br/><br />
 
-                <!-- submit -->
                 <input id="button" type="button" value="View Results" >
                     <!-- onclick="getUserInput()" -->
             </form>
@@ -281,14 +279,17 @@
         <div id="map" style="width: 60%; max-width: 700px; height: 400px;"></div>
 
     </div>
-        
+   
+        <div id="email_div" ></div>
+        <br>
         <div id="hospital"></div>
         
-
+        <!-- Load the Google Map -->
         <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I&callback=initMap">
-        </script>
-    </body>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I&callback=initMap"></script> 
 
+        </body>
+        </html>
+        
+    
 
-</html>
