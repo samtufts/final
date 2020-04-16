@@ -19,13 +19,11 @@ body {
     color: white;
     overflow: hidden;
     background-size: cover;
-    position: relative;
     text-align: center;
     background-image: url('maks.jpg');
 }
 
 #centered {
-    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
