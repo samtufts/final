@@ -12,7 +12,7 @@ body {
 }
 
 #hero {
-/*     padding-top: 250px; */
+    padding-top: 250px; 
     background-position: center;
     background-size: 100%;
     background-repeat: no-repeat;
@@ -21,12 +21,6 @@ body {
     background-size: cover;
     text-align: center;
     background-image: url('maks.jpg');
-}
-
-#centered {
-    top: 50%;
-    left: 50%;
-    color: black; 
 }
 
 
