@@ -28,6 +28,25 @@ h1 {
     background-image: url('maks.jpg');
 }
 
+.twoboxes {
+    float: center;
+    width: 100%;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    text-align: center;
+}
+
+.box {
+    float:center;
+    display: flex;
+    flex-direction: row;
+    width: 18%;
+    padding-top: 1%;
+    display: inline-block;
+    padding: 15 32;
+    margin: 20px;
+}
+
 
 #map {
     height: 100%;
