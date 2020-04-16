@@ -11,6 +11,17 @@ body {
     
 }
 
+#hero {
+    padding-top: 250px;
+    background-position: center;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    color: white;
+    overflow: hidden;
+    background-size: cover;
+    background-image: url('');
+}
+
 #map {
     height: 100%;
 }
