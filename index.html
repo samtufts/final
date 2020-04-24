@@ -153,11 +153,31 @@
                 });
             }
 
+            function titleCase(string) {
+                var sentence = string.toLowerCase().split(" ");
+                for (var i = 0; i < sentence.length; i++) {
+                    sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+                }
+
+                return sentence.join(" ");
+            }
+            
             // * * * * * * gets a list of hospitals from the database * * * * * * //
             function getHospitals(lat_value, long_value, num_hospitals) {                
                 request = new XMLHttpRequest();
-
-                request.open("GET", "https://ppe-api.herokuapp.com/queryhospitals?lat=" + lat_value + "&lon=" + long_value + "&n=" + num_hospitals, true);
+                local = false;
+                url_prod = "https://ppe-api.herokuapp.com/queryhospitals?lat=";
+                url_local = "http://localhost:3000/queryhospitals?lat=";
+              
+                if (local) {
+                    console.log("---localhost---");
+                    request.open("GET", url_local + lat_value + "&lon=" + long_value + "&n=" + num_hospitals, true);
+                
+                } else {
+                    console.log("---prod---");
+                    request.open("GET", url_prod + lat_value + "&lon=" + long_value + "&n=" + num_hospitals, true);
+                }
+                
                 
                 request.send();
                 
@@ -178,15 +198,17 @@
                             var website_link = hospitals_object.hospitals[i].website;
 
                             let info_window_text = "<b>"
-                                                + hospitals_object.hospitals[i].name
+                                                + titleCase(hospitals_object.hospitals[i].name)
                                                 + "</b><br>"
-                                                + hospitals_object.hospitals[i].address
+                                                + titleCase(hospitals_object.hospitals[i].address)
                                                 + "<br>"
-                                                + hospitals_object.hospitals[i].city
+                                                + titleCase(hospitals_object.hospitals[i].city)
                                                 + ", "
                                                 + hospitals_object.hospitals[i].state
-                                                + ","
+                                                + ", "
                                                 + hospitals_object.hospitals[i].zip
+                                                + "<br>"
+                                                + "Procurement Office: (212) 781-3125"
                                                 + "<br>"
                                                 + "<a href='" + website_link + "'target='_blank'> Website link </a>";
 
@@ -239,16 +261,22 @@
         </script>
 
     
+
+
     <div id="hero"> </div>
-        <h1>We connect people who'd like to donate PPE to hospitals that need it</h1>
-        </br></br>
-        <h4 style="text-align: center;"> Please provide your address in the fields below to get contact information of the three hospitals nearest to you. </h4>
-    
+    <h1>We connect people who'd like to donate PPE to hospitals that need it</h1>
+    </br></br>
+    <h4 style="text-align: center;"> 
+        Please provide your address in the fields below to get contact information of the
+        hospitals nearest to you. </h4>
+
     <div class="flex-container">
         <div style="padding-left: 75px;">
             <form name="numbers-form" > 
                 <p style="width: 500px">
-                    <b>All fields are required.</b> <br />
+                    <b>Instructions</b>: <br />
+                    Please provide your address in the fields below to get contact information of the three hospitals nearest to you.<br />
+                    All fields are required.
                 </p>
 
                 <p class="field_title">Street Address&#42;</p>
@@ -275,10 +303,8 @@
                     <!-- onclick="getUserInput()" -->
             </form>
         </div>
-        
-        
-            <div id="map" style="width: 60%; max-width: 700px; height: 400px;"></div>
-     
+
+        <div id="map" style="width: 60%; max-width: 700px; height: 400px;"></div>
 
     </div>
    
@@ -286,7 +312,7 @@
         <br>
         <div id="hospital"></div>
 
-<!--         <blockquote class="twitter-tweet">
+        <!-- <blockquote class="twitter-tweet">
             <p lang="en" dir="ltr">Sorry to interrupt your scrolling, but we need at least 267 more patriotic Americans like YOU
                 to sign our card before midnight to support our troops who are locked down or even quarantined due to the global
                 pandemic — but we&#39;re still missing your name. Will you sign the card now?</p>&mdash; USO (@the_USO) <a
