@@ -64,7 +64,7 @@ h1 {
 }
 
 
-@media screen and (min-width: 600px){
+@media screen and (min-width: 1000px){
     .flex-container {
         display: flex;
         margin: 30px;
