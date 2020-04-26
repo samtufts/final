@@ -197,7 +197,7 @@
                             
                             var website_link = hospitals_object.hospitals[i].website;
 
-                            let info_window_text = "<b>"
+                            let info_window_text = "<h2><b>"
                                                 + titleCase(hospitals_object.hospitals[i].name)
                                                 + "</b><br>"
                                                 + titleCase(hospitals_object.hospitals[i].address)
@@ -210,7 +210,8 @@
                                                 + "<br>"
                                                 + "Procurement Office: (212) 781-3125"
                                                 + "<br>"
-                                                + "<a href='" + website_link + "'target='_blank'> Website link </a>";
+                                                + "<a href='" + website_link + "'target='_blank'> Website link </a>"
+                                                + "</h2>;
 
                             str_hosp_info += info_window_text + "<br> <br>";
 
@@ -266,16 +267,16 @@
     <div id="hero"> </div>
     <h1>We connect people who'd like to donate PPE to hospitals that need it</h1>
     </br></br>
-    <h4 style="text-align: center;"> 
+    <h2 style="text-align: center;"> 
         Please provide your address in the fields below to get contact information of the
-        hospitals nearest to you. </h4>
+        hospitals nearest to you. </h2>
 
     <div class="flex-container">
         <div style="padding-left: 75px;">
             <form name="numbers-form" > 
                 <p style="width: 500px">
                     <b>Instructions</b>: <br />
-                    Please provide your address in the fields below to get contact information of the three hospitals nearest to you.<br />
+                    <br />
                     All fields are required.
                 </p>
 
