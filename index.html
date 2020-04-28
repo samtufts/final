@@ -6,7 +6,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
 
-    <body>
+    <body onload="getTweets();">
         <script language="javascript">
         
             // * * * * * * populate dropdown of US States and Territories * * * * * * //
@@ -38,6 +38,59 @@
                     var selected_state = $('#states').html(dropdown);
                 }
             );
+
+            
+            function getTweets() {
+
+                request = new XMLHttpRequest();
+
+                local = false;
+
+                url_prod = "https://ppe-api.herokuapp.com/recentmentions?=";
+                url_local = "http://localhost:3000/recentmentions?n=";
+
+                if (local) {
+                    console.log("---localhost---");
+                    request.open("GET", url_local, true);
+
+                } else {
+                    console.log("---prod---");
+                    request.open("GET", url_prod, true);
+                }
+
+                request.send();
+                console.log("inside getTweets()");
+
+                request.onreadystatechange = function () {
+
+                    if (request.readyState == 4 && request.status == 200) {
+
+                        result = request.responseText;
+                        console.log(result);
+
+                        tweets_object = JSON.parse(result);
+                        console.log(tweets_object);
+                        
+                        twitter_mentions = "";
+
+                        for (var i in tweets_object) {
+                            twitter_mentions += "<div style='border: 2px solid #1e0ca8; padding: 20px; max-width: 20%; text-align:center; margin:auto; border-radius:3px'>"
+                            + tweets_object[i].text 
+                            + "</br> from @" +
+                            tweets_object[i].user +
+                            "</div ></br></br>";
+                        }
+
+                        document.getElementById("twitter").innerHTML = twitter_mentions;
+
+                    } else if (request.readyState == 4 && request.status != 200) {
+                        document.getElementById("twitter").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
+
+                    } else if (request.readyState == 3) {
+                        document.getElementById("twitter").innerHTML = "Too soon!  Try again";
+                    }
+                }
+            }
 
             // * * * * * * adds CSS to the improperly-filled input field * * * * * * //       
             function addCSS(ID) {
@@ -102,34 +155,44 @@
 
 
             // * * * * * * Load the map * * * * * * //
+
             var map;
+
             function initMap() {
                 console.log("inside initMap");
-                
-                     map = new google.maps.Map(document.getElementById('map'), {
-                        zoom: 3,
-                        center: {lat: 39.5, lng: - 98.35}
-                    });
 
-                    var geocoder = new google.maps.Geocoder();
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 3,
+                    center: {lat: 39.5, lng: - 98.35}
+                });
 
-                    document.getElementById('button').addEventListener('click', function () {
-                        if (validateForm()) {
-                            
-                            var address = getUserInput();
-                            console.log("address", address);
-                            
-                            geocodeAddress(geocoder, map, address);
-
-                        }else {
-                            alert("Please fill any missing fields in the form")
-                            return;
-                        }
-                    });
-
-                    //reset address for next click
-                    address = "";
+                    getResults();
                 }
+
+            function getResults() {
+                console.log("inside getResults()");
+                
+                var geocoder = new google.maps.Geocoder();
+
+                document.getElementById('button').addEventListener('click', function () {
+                    if (validateForm()) {
+
+                        var address = getUserInput();
+                        console.log("address", address);
+
+                        geocodeAddress(geocoder, map, address);
+
+                    } else {
+                        alert("Please fill any missing fields in the form")
+                        return;
+                    }
+                });
+
+                //reset address for next click
+                address = "";
+            }
+                    
+                
 
             // * * * * * * Geocode address provided by user through form * * * * * * //
             function geocodeAddress(geocoder, resultsMap, address) {
@@ -162,15 +225,24 @@
                 return sentence.join(" ");
             }
             
+            function addForm() {
+
+                document.getElementById("form-div").innerHTML = "<form name='numbers-form' ><p class='field_title'>Street Address&#42;</p><input id='street_address' name='street_address'><p class='field_title'>City&#42;</p><input id='city' name='city'><p class='field_title'>State&#42;</p><div id='states'></div><p class='field_title'>Zip Code&#42;</p><input id='zip' name='zip'><p class='field_title'>Number of Hospitals&#42;</p><input id='n_hospitals' name='n_hospitals'><p class='field_title'>Email</p><input id='email-address' name='email-address'><br /><br /><input id='button' type='button' value='View Results' onclick='getResults()' ></form>";
+
+                getResults();
+
+                $('#states').html(dropdown)
+            }
+
+
+
             // * * * * * * gets a list of hospitals from the database * * * * * * //
             function getHospitals(lat_value, long_value, num_hospitals, email) {                
                 request = new XMLHttpRequest();
 
-                local = false;
+                local = true;
 
                 url_prod = "https://ppe-api.herokuapp.com/queryhospitals?lat=";
-                // url_prod = "https://www.ppe-donations.com/queryhospitals?lat="
-
                 url_local = "http://localhost:3000/queryhospitals?lat=";
 
                 url_query = lat_value + "&lon=" + long_value + "&n=" + 
@@ -197,7 +269,7 @@
 
                         hospitals_object = JSON.parse(result);
 
-                        var str_hosp_info = "<b><h2>Hospital Contact Information: </b></h2><br><br>";
+                        var str_hosp_info = "<b><h2>Hospital Contact Information: </b></h2>";
 
                         // add hospital contact info to page and markers to map
                         for (i in hospitals_object.hospitals) {
@@ -219,7 +291,8 @@
                                                 + "<br>"
                                                 + "<a href='" + website_link + "'target='_blank'> Website link </a>";
 
-                            str_hosp_info += info_window_text + "<br> <br>";
+                            str_hosp_info +=  info_window_text +
+                                              "<br><br><br>";
 
                             // add a marker
                             var marker = new google.maps.Marker({
@@ -243,7 +316,9 @@
                             });
                         }
 
-                        document.getElementById("hospital").innerHTML = str_hosp_info;
+                        let button_reset = "<input type='button' value='New Search' onclick='addForm()'>";
+
+                        document.getElementById("form-div").innerHTML = str_hosp_info + button_reset;
                         
                         // add marker for user's location - for relative context/usability
                         var marker_user = new google.maps.Marker({
@@ -257,13 +332,14 @@
                         map.setZoom(12);
 
                     } else if (request.readyState == 4 && request.status != 200) {
-                        document.getElementById("hospital").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
+                        document.getElementById("form-div").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
                     
                     } else if (request.readyState == 3) {
-                        document.getElementById("hospital").innerHTML = "Too soon!  Try again";
+                        document.getElementById("form-div").innerHTML = "Too soon!  Try again";
                     }
                 }
             }
+    
 
         </script>
 
@@ -271,21 +347,22 @@
 
 
     <div id="hero"> </div>
+    </br>
     <h1>We connect people who'd like to donate PPE to hospitals that need it</h1>
     </br></br>
-    <h4 style="text-align: center;"> 
-        Please provide your address in the fields below to get contact information of the
-        hospitals nearest to you. </h4>
+    <div style="text-align: center; margin-bottom: 50px;">
+        <p style="font-size: 16px;">
+            Please provide your address in the fields below to get contact information of the hospitals nearest to
+            you.<br><br />
+            Fields marked with an (*) are required. </br><br />
+            If you provide your email address, you'll automatically receive the results by email. </br>
+        </p>
+    </div>
+    
 
-    <div class="flex-container">
-        <div style="padding-left: 75px;">
+    <div class="flex-container" style="padding: 50px; border: 2px solid #1e0ca8">    
+        <div id="form-div" style="padding-left: 75px; margin-right: 50px;">
             <form name="numbers-form" > 
-                <p style="width: 500px">
-                    <b>Instructions</b>: <br />
-                    Please provide your address in the fields below to get contact information of the three hospitals nearest to you.<br />
-                    All fields are required.
-                </p>
-
                 <p class="field_title">Street Address&#42;</p>
                     <input id="street_address" name="street_address" value="45 Pinkham Rd">
 
@@ -301,13 +378,12 @@
                 <p class="field_title">Number of Hospitals&#42;</p>
                     <input id="n_hospitals" name="n_hospitals" value="3">
 
-                <p class="field_title">Email (to save results)</p>
+                <p class="field_title">Email Address</p>
                 <input id="email-address" name="email-address" value="sam.ewenczyk@gmail.com">
 
                 <br/><br />
 
                 <input id="button" type="button" value="View Results" >
-                    <!-- onclick="getUserInput()" -->
             </form>
         </div>
 
@@ -315,19 +391,24 @@
 
     </div>
    
-        <div id="email_div" ></div>
-    <div id="hospital" style="text-align: center;"></div>
+    <div id="email_div" ></div>
+
+    <!-- <div id="hospital" style="text-align: center"></div> -->
     </br></br></br></br>
-    <div>
-        <h1> See who's tweeted us with donations! </h1>
-        <h4> If you tweet us your zip code, we'll send you the information of the hospital closest to you. </h4>
+
+    <div style="text-align: center;">
+        <h1> Get Results Using Twitter </h1>
+        <h3> If you tweet us your zip code, we'll send you the information of the hospital closest to you. </h3>
+        <p>See the most recent tweets we've received and replied to! Please share far and wide!</p>
     </div>
+
     </br></br>
-    <div style="text-align: center">
-        <a class="twitter-timeline" href="https://twitter.com/PPE_Donations?ref_src=twsrc%5Etfw" data-width="700"
+<div style="max-width: 10%;"></div>
+    <div id="twitter" style="text-align: center">
+        <!-- <a class="twitter-timeline" href="https://twitter.com/PPE_Donations?ref_src=twsrc%5Etfw" data-width="400"
             data-height="1000">
             Tweets by PPE_Donations</a>
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
     </div>
     
     <!-- Load the Google Map -->
