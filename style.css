@@ -8,10 +8,6 @@ h1 {
     text-align: center;
 }
 
-#text {
-    text-align: center;
-}
-
 
 .field_title {
     font-weight: bold;
@@ -68,9 +64,11 @@ h1 {
 }
 
 
-@media screen and (min-width: 1000px){
+@media screen and (min-width: 600px){
     .flex-container {
         display: flex;
-        margin: 30px;
+        flex-direction: row;
+        justify-content: center;
+        /* margin: 30px; */
 /*         height: 600px; */
     }
