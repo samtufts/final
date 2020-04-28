@@ -144,7 +144,7 @@
                         var long = latlong.lng();
 
                         // get n closest hospitals
-                        getHospitals(lat, long, num_hospitals);
+                        getHospitals(lat, long, num_hospitals, email);
 
                     } else {
                         // alert('Geocode was not successful for the following reason: ' + status);
@@ -163,21 +163,28 @@
             }
             
             // * * * * * * gets a list of hospitals from the database * * * * * * //
-            function getHospitals(lat_value, long_value, num_hospitals) {                
+            function getHospitals(lat_value, long_value, num_hospitals, email) {                
                 request = new XMLHttpRequest();
-                local = false;
+
+                local = true;
+
                 url_prod = "https://ppe-api.herokuapp.com/queryhospitals?lat=";
+                // url_prod = "https://www.ppe-donations.com/queryhospitals?lat="
+
                 url_local = "http://localhost:3000/queryhospitals?lat=";
-              
+
+                url_query = lat_value + "&lon=" + long_value + "&n=" + 
+                
+                num_hospitals + "&email=" + email;
+
                 if (local) {
                     console.log("---localhost---");
-                    request.open("GET", url_local + lat_value + "&lon=" + long_value + "&n=" + num_hospitals, true);
+                    request.open("GET", url_local + url_query, true);
                 
                 } else {
                     console.log("---prod---");
-                    request.open("GET", url_prod + lat_value + "&lon=" + long_value + "&n=" + num_hospitals, true);
+                    request.open("GET", url_prod + url_query, true);
                 }
-                
                 
                 request.send();
                 
@@ -190,14 +197,14 @@
 
                         hospitals_object = JSON.parse(result);
 
-                        var str_hosp_info = "<b><h1>Hospital Contact Information: </h1></b> <br><br>";
+                        var str_hosp_info = "<b><h2>Hospital Contact Information: </b></h2><br><br>";
 
                         // add hospital contact info to page and markers to map
                         for (i in hospitals_object.hospitals) {
                             
                             var website_link = hospitals_object.hospitals[i].website;
 
-                            let info_window_text = "<h3><b>"
+                            let info_window_text = "<b>"
                                                 + titleCase(hospitals_object.hospitals[i].name)
                                                 + "</b><br>"
                                                 + titleCase(hospitals_object.hospitals[i].address)
@@ -210,8 +217,7 @@
                                                 + "<br>"
                                                 + "Procurement Office: (212) 781-3125"
                                                 + "<br>"
-                                                + "<a href='" + website_link + "'target='_blank'> Website link </a>"
-                                                + "</h3>";
+                                                + "<a href='" + website_link + "'target='_blank'> Website link </a>";
 
                             str_hosp_info += info_window_text + "<br> <br>";
 
@@ -267,16 +273,16 @@
     <div id="hero"> </div>
     <h1>We connect people who'd like to donate PPE to hospitals that need it</h1>
     </br></br>
-    <h2 style="text-align: center;"> 
+    <h4 style="text-align: center;"> 
         Please provide your address in the fields below to get contact information of the
-        hospitals nearest to you. </h2>
+        hospitals nearest to you. </h4>
 
     <div class="flex-container">
         <div style="padding-left: 75px;">
             <form name="numbers-form" > 
                 <p style="width: 500px">
                     <b>Instructions</b>: <br />
-                    <br />
+                    Please provide your address in the fields below to get contact information of the three hospitals nearest to you.<br />
                     All fields are required.
                 </p>
 
@@ -310,33 +316,25 @@
     </div>
    
         <div id="email_div" ></div>
-        <br>
-        <div id="hospital" style="text-align: center;"></div>
-        </br></br></br></br>
-
-        <div>
-            <h1> See who's tweeted us with donations! </h1>
-            <h4> If you tweet us your zip code, we'll send you the information of the hospital closest to you. </h4>
-        </div>
-
-        </br></br>
-
-        <div style="text-align: center">
-            <a class="twitter-timeline" 
-             href="https://twitter.com/PPE_Donations?ref_src=twsrc%5Etfw"
-             data-width="700"
-             data-height="1000">
-             Tweets by PPE_Donations</a> 
-            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-        </div>
-
-        
-        <!-- Load the Google Map -->
-        <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I&callback=initMap"></script> 
-
-        </body>
-        </html>
-        
+    <div id="hospital" style="text-align: center;"></div>
+    </br></br></br></br>
+    <div>
+        <h1> See who's tweeted us with donations! </h1>
+        <h4> If you tweet us your zip code, we'll send you the information of the hospital closest to you. </h4>
+    </div>
+    </br></br>
+    <div style="text-align: center">
+        <a class="twitter-timeline" href="https://twitter.com/PPE_Donations?ref_src=twsrc%5Etfw" data-width="700"
+            data-height="1000">
+            Tweets by PPE_Donations</a>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+    
+    <!-- Load the Google Map -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I&callback=initMap"></script>
+    </body>
+    
+    </html>
     
 
