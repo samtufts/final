@@ -44,17 +44,17 @@
 
                 request = new XMLHttpRequest();
 
-                local = false;
+                local_twitter = false;
 
                 url_prod = "https://ppe-api.herokuapp.com/recentmentions?=";
                 url_local = "http://localhost:3000/recentmentions?n=";
 
-                if (local) {
-                    console.log("---localhost---");
+                if (local_twitter) {
+                    console.log("---Twitter: localhost---");
                     request.open("GET", url_local, true);
 
                 } else {
-                    console.log("---prod---");
+                    console.log("---Twitter: prod---");
                     request.open("GET", url_prod, true);
                 }
 
@@ -240,7 +240,7 @@
             function getHospitals(lat_value, long_value, num_hospitals, email) {                
                 request = new XMLHttpRequest();
 
-                local = false;
+                local = true;
 
                 url_prod = "https://ppe-api.herokuapp.com/queryhospitals?lat=";
                 url_local = "http://localhost:3000/queryhospitals?lat=";
@@ -398,7 +398,7 @@
 
     <div style="text-align: center;">
         <h1> Get Results Using Twitter </h1>
-        <h3> If you tweet us your zip code, we'll send you the information of the hospital closest to you. </h3>
+        <h3> If you tweet us your zip code, we'll send you the contact information of the hospital closest to you. </h3>
         <p>See the most recent tweets we've received and replied to! Please share far and wide!</p>
     </div>
 
