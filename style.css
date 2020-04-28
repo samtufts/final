@@ -8,13 +8,17 @@ h1 {
     text-align: center;
 }
 
-
+input {
+    width: 175px;
+    margin-top: 5px;
+}
 .field_title {
     font-weight: bold;
     margin-bottom: 3px;
     font-size: 15px;
     
 }
+
 
 #hero {
     padding-top: 250px; 

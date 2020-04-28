@@ -72,13 +72,38 @@
                         console.log(tweets_object);
                         
                         twitter_mentions = "";
+                        
+                        let unix_timestamp = 1549312452
+                        // Create a new JavaScript Date object based on the timestamp
+                        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+                        var date = new Date(unix_timestamp * 1000);
+                        // Hours part from the timestamp
+                        var hours = date.getHours();
+                        // Minutes part from the timestamp
+                        var minutes = "0" + date.getMinutes();
+                        // Seconds part from the timestamp
+                        var seconds = "0" + date.getSeconds();
 
-                        for (var i in tweets_object) {
-                            twitter_mentions += "<div style='border: 2px solid #1e0ca8; padding: 20px; max-width: 20%; text-align:center; margin:auto; border-radius:3px'>"
-                            + tweets_object[i].text 
-                            + "</br> from @" +
-                            tweets_object[i].user +
-                            "</div ></br></br>";
+                        // Will display time in 10:30:23 format
+                        var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+                        
+
+                        
+
+                        for (i = 0; i < 5; i++) {
+                            var date = new Date(tweets_object[i].timestamp * 1000);
+                            var trimmedDate = date.toString().split(" ").slice(0, 4).join(" ")
+                            
+
+                            twitter_mentions += "<div style='border: 2px solid  #1e0ca8; padding: 20px; max-width: 20%; text-align:center; margin:auto; border-radius:3px'>"
+                                                + "<i>"
+                                                + tweets_object[i].text 
+                                                + "</i>"
+                                                + "</br></br> from @" 
+                                                + tweets_object[i].user 
+                                                + " on "
+                                                + trimmedDate
+                                                + "</div ></br></br>";
                         }
 
                         document.getElementById("twitter").innerHTML = twitter_mentions;
@@ -102,6 +127,14 @@
                 if (ID != "#state_name") {
                     $(ID).focus();
                 }
+
+                if (ID == "#email-address") {
+                    $("#email-address").val(function (i, text) {
+                        return "incorrect email address";
+                    });
+                }
+
+                
             }
 
             // * * * * * * validates the form * * * * * * //
@@ -126,6 +159,19 @@
                 if ($("#zip").val() == "") {
                     addCSS("#zip");
                     return false;
+                }
+
+                // only validate email if field has been filled
+                if ($("#email-address").val() != "") {
+
+                    inputText = $("#email-address").val();
+
+                    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+                    if (!inputText.match(mailformat)) {
+                        addCSS("#email-address");
+                        return false;
+                    }
                 }
 
                 return true;
@@ -183,7 +229,7 @@
                         geocodeAddress(geocoder, map, address);
 
                     } else {
-                        alert("Please fill any missing fields in the form")
+                        alert("Please fill all required fields or check the email address you entered is correct")
                         return;
                     }
                 });
@@ -216,31 +262,33 @@
                 });
             }
 
-            function titleCase(string) {
-                var sentence = string.toLowerCase().split(" ");
-                for (var i = 0; i < sentence.length; i++) {
-                    sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+ 
+            function titleCase(str) {
+               str = str.toLowerCase().split(" ");
+                for (var i = 0; i < str.length; i++) {
+                    if (str[i] != "") {
+                        str[i] = str[i][0].toUpperCase() + str[i].substr(1);
+                    }
+                    
                 }
-
-                return sentence.join(" ");
+                return str.join(" ");
             }
             
             function addForm() {
 
                 document.getElementById("form-div").innerHTML = "<form name='numbers-form' ><p class='field_title'>Street Address&#42;</p><input id='street_address' name='street_address'><p class='field_title'>City&#42;</p><input id='city' name='city'><p class='field_title'>State&#42;</p><div id='states'></div><p class='field_title'>Zip Code&#42;</p><input id='zip' name='zip'><p class='field_title'>Number of Hospitals&#42;</p><input id='n_hospitals' name='n_hospitals'><p class='field_title'>Email</p><input id='email-address' name='email-address'><br /><br /><input id='button' type='button' value='View Results' onclick='getResults()' ></form>";
 
-                getResults();
+                initMap();
 
                 $('#states').html(dropdown)
             }
-
 
 
             // * * * * * * gets a list of hospitals from the database * * * * * * //
             function getHospitals(lat_value, long_value, num_hospitals, email) {                
                 request = new XMLHttpRequest();
 
-                local = true;
+                local = false;
 
                 url_prod = "https://ppe-api.herokuapp.com/queryhospitals?lat=";
                 url_local = "http://localhost:3000/queryhospitals?lat=";
@@ -387,7 +435,7 @@
             </form>
         </div>
 
-        <div id="map" style="width: 60%; max-width: 700px; height: 400px;"></div>
+        <div id="map" style="width: 60%; max-width: 800px; height: 500px;"></div>
 
     </div>
    
@@ -398,6 +446,7 @@
 
     <div style="text-align: center;">
         <h1> Get Results Using Twitter </h1>
+        <a href="https://twitter.com/PPE_Donations" target="blank">Our Twitter Account</a>
         <h3> If you tweet us your zip code, we'll send you the contact information of the hospital closest to you. </h3>
         <p>See the most recent tweets we've received and replied to! Please share far and wide!</p>
     </div>
