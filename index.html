@@ -4,6 +4,7 @@
         <title>PPE for Hospitals</title>
         <link rel="stylesheet" href="style.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
     </head>
 
     <body onload="getTweets();">
@@ -93,7 +94,6 @@
                         for (i = 0; i < 5; i++) {
                             var date = new Date(tweets_object[i].timestamp * 1000);
                             var trimmedDate = date.toString().split(" ").slice(0, 4).join(" ")
-                            
 
                             twitter_mentions += "<div style='border: 2px solid  #1e0ca8; padding: 20px; max-width: 20%; text-align:center; margin:auto; border-radius:3px'>"
                                                 + "<i>"
@@ -364,7 +364,7 @@
                             });
                         }
 
-                        let button_reset = "<input type='button' value='New Search' onclick='addForm()'>";
+                        let button_reset = "<input id= 'button' type='button' value='New Search' onclick='addForm()'>";
 
                         document.getElementById("form-div").innerHTML = str_hosp_info + button_reset;
                         
@@ -412,22 +412,22 @@
         <div id="form-div" style="padding-left: 75px; margin-right: 50px;">
             <form name="numbers-form" > 
                 <p class="field_title">Street Address&#42;</p>
-                    <input id="street_address" name="street_address" value="45 Pinkham Rd">
+                    <input id="street_address" name="street_address">
 
                 <p class="field_title">City&#42;</p>
-                    <input id="city" name="city" value="Medford">
+                    <input id="city" name="city">
 
                 <p class="field_title">State&#42;</p>
                     <div id="states"></div>
 
                 <p class="field_title">Zip Code&#42;</p>
-                    <input id="zip" name="zip" value="02155">
+                    <input id="zip" name="zip">
 
                 <p class="field_title">Number of Hospitals&#42;</p>
-                    <input id="n_hospitals" name="n_hospitals" value="3">
+                    <input id="n_hospitals" name="n_hospitals">
 
                 <p class="field_title">Email Address</p>
-                <input id="email-address" name="email-address" value="sam.ewenczyk@gmail.com">
+                <input id="email-address" name="email-address">
 
                 <br/><br />
 

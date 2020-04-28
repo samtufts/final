@@ -19,6 +19,24 @@ input {
     
 }
 
+#button {
+    background-color: #1a09a0;
+    color: white;
+    padding: 15px 32px;
+    /* margin: 20px; */
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 4px;
+    max-width: 500px;
+    transition-duration: 0.4s;
+}
+
+#button:hover {
+  background-color:rgb(127, 150, 0);
+  color: white;
+  cursor: pointer;
+}
 
 #hero {
     padding-top: 250px; 
