@@ -85,12 +85,31 @@ input {
     height: 100%;
 }
 
+#form-div {
+    padding: 0px 25px;
+}
 
+.flex-container {
+    padding: 50px 0px;
+}
+
+.tweet {
+    padding: 20px;
+    margin: auto;
+}
+
+/* mobile */
 @media screen and (min-width: 600px){
     .flex-container {
         display: flex;
         flex-direction: row;
         justify-content: center;
         /* margin: 30px; */
-/*         height: 600px; */
+        /* height: 600px; */
     }
+
+    .tweet {
+        max-width: 20%;
+    }
+
+}

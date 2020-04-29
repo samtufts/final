@@ -73,29 +73,12 @@
                         console.log(tweets_object);
                         
                         twitter_mentions = "";
-                        
-                        let unix_timestamp = 1549312452
-                        // Create a new JavaScript Date object based on the timestamp
-                        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
-                        var date = new Date(unix_timestamp * 1000);
-                        // Hours part from the timestamp
-                        var hours = date.getHours();
-                        // Minutes part from the timestamp
-                        var minutes = "0" + date.getMinutes();
-                        // Seconds part from the timestamp
-                        var seconds = "0" + date.getSeconds();
-
-                        // Will display time in 10:30:23 format
-                        var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-                        
-
-                        
-
+                    
                         for (i = 0; i < 5; i++) {
                             var date = new Date(tweets_object[i].timestamp * 1000);
                             var trimmedDate = date.toString().split(" ").slice(0, 4).join(" ")
 
-                            twitter_mentions += "<div style='border: 2px solid  #1e0ca8; padding: 20px; max-width: 20%; text-align:center; margin:auto; border-radius:3px'>"
+                            twitter_mentions += "<div class= 'tweet' style='border: 2px solid #1e0ca8;text-align:center; border-radius:3px'>"
                                                 + "<i>"
                                                 + tweets_object[i].text 
                                                 + "</i>"
@@ -232,6 +215,7 @@
                         alert("Please fill all required fields or check the email address you entered is correct")
                         return;
                     }
+
                 });
 
                 //reset address for next click
@@ -277,9 +261,13 @@
             function addForm() {
 
                 document.getElementById("form-div").innerHTML = "<form name='numbers-form' ><p class='field_title'>Street Address&#42;</p><input id='street_address' name='street_address'><p class='field_title'>City&#42;</p><input id='city' name='city'><p class='field_title'>State&#42;</p><div id='states'></div><p class='field_title'>Zip Code&#42;</p><input id='zip' name='zip'><p class='field_title'>Number of Hospitals&#42;</p><input id='n_hospitals' name='n_hospitals'><p class='field_title'>Email</p><input id='email-address' name='email-address'><br /><br /><input id='button' type='button' value='View Results' onclick='getResults()' ></form>";
+                
+                // remove the instructions label under map
+                $("#instructions").html("");
 
+                // bring the user back to the top of the empty form
+                window.scrollTo(0, 0);
                 initMap();
-
                 $('#states').html(dropdown)
             }
 
@@ -379,6 +367,8 @@
                         map.panTo(marker_user.position);
                         map.setZoom(12);
 
+                        $("#instructions").html("<br>Click on the red hospital pins to view the hospital's address");
+
                     } else if (request.readyState == 4 && request.status != 200) {
                         document.getElementById("form-div").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
                     
@@ -398,6 +388,7 @@
     </br>
     <h1>We connect people who'd like to donate PPE to hospitals that need it</h1>
     </br></br>
+    
     <div style="text-align: center; margin-bottom: 50px;">
         <p style="font-size: 16px;">
             Please provide your address in the fields below to get contact information of the hospitals nearest to
@@ -407,9 +398,12 @@
         </p>
     </div>
     
+    <a href="#top"></a>
 
-    <div class="flex-container" style="padding: 50px; border: 2px solid #1e0ca8">    
-        <div id="form-div" style="padding-left: 75px; margin-right: 50px;">
+    <div class="flex-container" style=" border: 2px solid #1e0ca8">    
+        <!-- padding: 50px; -->
+        <div id="form-div" style=" margin-right: 50px;">
+            <!-- padding-left: 75px; -->
             <form name="numbers-form" > 
                 <p class="field_title">Street Address&#42;</p>
                     <input id="street_address" name="street_address">
@@ -435,11 +429,14 @@
             </form>
         </div>
 
-        <div id="map" style="width: 60%; max-width: 800px; height: 500px;"></div>
+        <div style="width: 100%; max-width: 800px; height: 500px;">
+            <div id="map"></div>
+            <div id="instructions" style="text-align: center;"></div>
+        </div>
 
     </div>
+    
    
-    <div id="email_div" ></div>
 
     <!-- <div id="hospital" style="text-align: center"></div> -->
     </br></br></br></br>
