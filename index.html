@@ -74,11 +74,11 @@
                         
                         twitter_mentions = "";
                     
-                        for (i = 0; i < 5; i++) {
+                        for (i = 0; i < 8; i++) {
                             var date = new Date(tweets_object[i].timestamp * 1000);
                             var trimmedDate = date.toString().split(" ").slice(0, 4).join(" ")
 
-                            twitter_mentions += "<div class= 'tweet' style='border: 2px solid #1e0ca8;text-align:center; border-radius:3px'>"
+                            twitter_mentions += "<div class= 'tweet' style='border: 2px solid #1DA1F2;text-align:center; border-radius:3px; padding-top:45px; padding-bottom: 45px; min-height:80px; max-height:200px; margin-bottom:20px'"
                                                 + "<i>"
                                                 + tweets_object[i].text 
                                                 + "</i>"
@@ -323,7 +323,7 @@
                                                 + ", "
                                                 + hospitals_object.hospitals[i].zip
                                                 + "<br>"
-                                                + "Procurement Office: " + hospitals_object.hospitals[i].phoneNumber
+                                                + "Procurement Office: (212) 781-3125"
                                                 + "<br>"
                                                 + "<a href='" + website_link + "'target='_blank'> Website link </a>";
 
@@ -398,9 +398,9 @@
         </p>
     </div>
     
-    <a href="#top"></a>
 
-    <div class="flex-container" style=" border: 2px solid #1e0ca8">    
+
+    <div class="flex-container" style=" border: 2px solid #1DA1F2">    
         <!-- padding: 50px; -->
         <div id="form-div" style=" margin-right: 50px;">
             <!-- padding-left: 75px; -->
@@ -449,12 +449,8 @@
     </div>
 
     </br></br>
-<div style="max-width: 10%;"></div>
-    <div id="twitter" style="text-align: center">
-        <!-- <a class="twitter-timeline" href="https://twitter.com/PPE_Donations?ref_src=twsrc%5Etfw" data-width="400"
-            data-height="1000">
-            Tweets by PPE_Donations</a>
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
+
+    <div id="twitter">
     </div>
     
     <!-- Load the Google Map -->
