@@ -312,6 +312,11 @@
                             
                             var website_link = hospitals_object.hospitals[i].website;
 
+														var phonenum = hospitals_object.hospitals[i].phoneNumber;
+														if (phonenum == "UNKNOWN") {
+															phonenum = "Unavailable"
+														}
+	
                             let info_window_text = "<b>"
                                                 + titleCase(hospitals_object.hospitals[i].name)
                                                 + "</b><br>"
@@ -323,7 +328,7 @@
                                                 + ", "
                                                 + hospitals_object.hospitals[i].zip
                                                 + "<br>"
-                                                + "Procurement Office: (212) 781-3125"
+                                                + "Procurement Office: " + phonenum
                                                 + "<br>"
                                                 + "<a href='" + website_link + "'target='_blank'> Website link </a>";
 
