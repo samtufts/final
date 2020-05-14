@@ -9,8 +9,10 @@ h1 {
 }
 
 input {
-    width: 175px;
+    width: 200px;
     margin-top: 5px;
+    border: 1px solid #1DA1F2;
+    height: 20px;
 }
 
 .field_title {
@@ -20,25 +22,34 @@ input {
     
 }
 
-#button {
+.button {
     background-color: #1DA1F2;
     color: white;
-    padding: 15px 32px;
-    /* margin: 20px; */
+    display: block;
+    /* padding-top: 5px;
+    padding-bottom: 5px;
     text-align: center;
-    display: inline-block;
-    font-size: 16px;
+    
+    float: left; 
+    font-size: 12px;
     border-radius: 4px;
-    max-width: 500px;
-    transition-duration: 0.4s;
+    max-width: 99px;
+    transition-duration: 0.4s;  */
 }
 
-#button:hover {
-  background-color:rgb(127, 150, 0);
+.button:hover {
+  background-color: #72B800;
   color: white;
   cursor: pointer;
 }
 
+#inlineButtons{
+    margin-top: 10px;
+}
+
+#results {
+    max-width: 350px;
+}
 #hero {
     padding-top: 250px; 
     background-position: center;
@@ -70,6 +81,7 @@ input {
 
 .flex-container {
     padding: 50px 0px;
+    background-color: rgba(140, 211, 255, 0.1);
 }
 
 /* parent */

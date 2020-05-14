@@ -2,51 +2,19 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <title>PPE for Hospitals</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style-fun.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     </head>
 
     <body onload="getTweets();">
         <script language="javascript">
-        
-            // * * * * * * populate dropdown of US States and Territories * * * * * * //
-            var dropdown = "<select name='state_name' id='state_name'>";
-            $(document).ready(
-                function () {
-                    var states = [
-                        'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
-                        'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
-                        'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
-                        'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
-                        'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
-                    ];
 
-                    // sort the array of states
-                    states.sort();
-
-                    // start with dummy option
-                    dropdown += "<option value= 'select a state'> select a state </option>";
-
-                    $.each(states, function (key, value) {
-                        dropdown += "<option value=" + value + ">" + value + "</option>";
-                    })
-
-                    // close the select tag
-                    dropdown += "</select>";
-
-                    // add the dropdown as an HTML string
-                    var selected_state = $('#states').html(dropdown);
-                }
-            );
-
-            
-            function getTweets() {
+            function getTweets() {    
 
                 request = new XMLHttpRequest();
 
                 local_twitter = false;
-
                 url_prod = "https://ppe-api.herokuapp.com/recentmentions?=";
                 url_local = "http://localhost:3000/recentmentions?n=";
 
@@ -67,15 +35,17 @@
                     if (request.readyState == 4 && request.status == 200) {
 
                         result = request.responseText;
-                        console.log(result);
+                        // console.log(result);
 
                         tweets_object = JSON.parse(result);
-                        console.log(tweets_object);
+                        // console.log(tweets_object);
                         
                         twitter_mentions = "";
                     
                         for (i = 0; i < 8; i++) {
+
                             var date = new Date(tweets_object[i].timestamp * 1000);
+
                             var trimmedDate = date.toString().split(" ").slice(0, 4).join(" ")
 
                             twitter_mentions += "<div class= 'tweet' style='border: 2px solid #1DA1F2;text-align:center; border-radius:3px; padding-top:45px; padding-bottom: 45px; min-height:80px; max-height:200px; margin-bottom:20px'"
@@ -100,9 +70,8 @@
                 }
             }
 
-            // * * * * * * adds CSS to the improperly-filled input field * * * * * * //       
+            // * * adds CSS to the improperly-filled input field * * //       
             function addCSS(ID) {
-                
                 $(ID).css({
                     "border": "2px solid red",
                 });
@@ -116,39 +85,31 @@
                         return "incorrect email address";
                     });
                 }
-
-                
             }
 
+            function removeCSS() {
+                $("input").css({
+                    "border": "1px solid #1DA1F2",
+                });
+            }
+            
             // * * * * * * validates the form * * * * * * //
             function validateForm() {
                 console.log("inside validateForm() function");
+
+                if ($("#n_hospitals").val() == "") {
+                    addCSS("#n_hospitals");
+                    return false;
+                }
+
+                if ($("#searchTextField").val() == "") {
+                    addCSS("#searchTextField");
+                    return false;
+                }
                 
-                if ($("#street_address").val() == "") {
-                    addCSS("#street_address");
-                    return false;
-                }
-
-                if ($("#city").val() == "") {
-                    addCSS("#city");
-                    return false;
-                }
-
-                if ($("#state_name").val() == "select a state") {
-                    addCSS("#state_name");
-                    return false;
-                }
-
-                if ($("#zip").val() == "") {
-                    addCSS("#zip");
-                    return false;
-                }
-
                 // only validate email if field has been filled
                 if ($("#email-address").val() != "") {
-
                     inputText = $("#email-address").val();
-
                     var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
                     if (!inputText.match(mailformat)) {
@@ -162,57 +123,65 @@
 
 
             // * * * * * * gets the user-inputted data from the form * * * * * * //
-            var num_hospitals = 0;
+
             var email = "";
 
             function getUserInput() {
-               
                 console.log("validation passed!");
-
-                //get the values from all form fields
-                var state_picked = $("#state_name").val();
-                var street_entered = $("#street_address").val();
-                var city_entered = $("#city").val();
-                var zip = $("#zip").val();
-                num_hospitals = $("#n_hospitals").val();
-                var address = street_entered + "," + city_entered +  "," + state_picked + "," + zip;
+                var num_hospitals = $("#n_hospitals").val();
                 email = $("#email-address").val();
                 console.log(email);
                 
-                return address;
+                return num_hospitals;
             }
 
 
-            // * * * * * * Load the map * * * * * * //
+            // * * * * * * Load the map and address autocomplete fields * * * * * * //
 
             var map;
+            var autocomplete;
 
             function initMap() {
-                console.log("inside initMap");
+                console.log("inside initMap()");
 
                 map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 3,
                     center: {lat: 39.5, lng: - 98.35}
                 });
 
-                    getResults();
+                var input = document.getElementById('searchTextField');
+                console.log("input: ", input);
+               
+                var options = {
+                    types: ['geocode'],
+                    componentRestrictions: { country: 'us' }
                 }
+
+                autocomplete = new google.maps.places.Autocomplete(input, options);
+
+                autocomplete.addListener('place_changed', getResults)
+            }   
+
+            let el = undefined;
 
             function getResults() {
                 console.log("inside getResults()");
+                var place = autocomplete.getPlace();
+                var lat = place.geometry.location.lat();
+                var long = place.geometry.location.lng();
+                console.log("lat:" + lat + "long: " + long);
                 
-                var geocoder = new google.maps.Geocoder();
+                el = document.getElementById("add-button2");
+                el.addEventListener("click", removeCSS, false);
 
-                document.getElementById('button').addEventListener('click', function () {
+                document.getElementById('button1').addEventListener('click', function () {
                     if (validateForm()) {
+                        var num_hospitals = getUserInput();
 
-                        var address = getUserInput();
-                        console.log("address", address);
-
-                        geocodeAddress(geocoder, map, address);
+                        getHospitals(lat, long, num_hospitals, email);
 
                     } else {
-                        alert("Please fill all required fields or check the email address you entered is correct")
+                        alert("Please fill specify a number of hospitals or check the email address you entered is correct")
                         return;
                     }
 
@@ -221,54 +190,28 @@
                 //reset address for next click
                 address = "";
             }
-                    
-                
-
-            // * * * * * * Geocode address provided by user through form * * * * * * //
-            function geocodeAddress(geocoder, resultsMap, address) {
-                console.log("inside geocodeAddress", address);
-                
-                geocoder.geocode({ 'address': address }, function (results, status) {
-                    if (status === 'OK') {
-                        
-                        // get the lat and long coordinates
-                        var latlong = results[0].geometry.location;
-                        var lat = latlong.lat();
-                        var long = latlong.lng();
-
-                        // get n closest hospitals
-                        getHospitals(lat, long, num_hospitals, email);
-
-                    } else {
-                        // alert('Geocode was not successful for the following reason: ' + status);
-                        alert("Sorry, the address you entered is not valid. Please try again.")
-                    }
-                });
-            }
-
- 
+            
+            
             function titleCase(str) {
                str = str.toLowerCase().split(" ");
+
                 for (var i = 0; i < str.length; i++) {
                     if (str[i] != "") {
                         str[i] = str[i][0].toUpperCase() + str[i].substr(1);
                     }
-                    
                 }
+
                 return str.join(" ");
             }
             
             function addForm() {
-
-                document.getElementById("form-div").innerHTML = "<form name='numbers-form' ><p class='field_title'>Street Address&#42;</p><input id='street_address' name='street_address'><p class='field_title'>City&#42;</p><input id='city' name='city'><p class='field_title'>State&#42;</p><div id='states'></div><p class='field_title'>Zip Code&#42;</p><input id='zip' name='zip'><p class='field_title'>Number of Hospitals&#42;</p><input id='n_hospitals' name='n_hospitals'><p class='field_title'>Email</p><input id='email-address' name='email-address'><br /><br /><input id='button' type='button' value='View Results' onclick='getResults()' ></form>";
-                
                 // remove the instructions label under map
                 $("#instructions").html("");
 
                 // bring the user back to the top of the empty form
                 window.scrollTo(0, 0);
                 initMap();
-                $('#states').html(dropdown)
+
             }
 
 
@@ -277,10 +220,8 @@
                 request = new XMLHttpRequest();
 
                 local = false;
-
                 url_prod = "https://ppe-api.herokuapp.com/queryhospitals?lat=";
                 url_local = "http://localhost:3000/queryhospitals?lat=";
-
                 url_query = lat_value + "&lon=" + long_value + "&n=" + 
                 
                 num_hospitals + "&email=" + email;
@@ -312,10 +253,10 @@
                             
                             var website_link = hospitals_object.hospitals[i].website;
 
-														var phonenum = hospitals_object.hospitals[i].phoneNumber;
-														if (phonenum == "UNKNOWN") {
-															phonenum = "Unavailable"
-														}
+							var phonenum = hospitals_object.hospitals[i].phoneNumber;
+        
+                            if (phonenum == "UNKNOWN") {							phonenum = "Unavailable"
+                            }
 	
                             let info_window_text = "<b>"
                                                 + titleCase(hospitals_object.hospitals[i].name)
@@ -357,10 +298,9 @@
                             });
                         }
 
-                        let button_reset = "<input id= 'button' type='button' value='New Search' onclick='addForm()'>";
 
-                        document.getElementById("form-div").innerHTML = str_hosp_info + button_reset;
-                        
+                        $("#results").html(str_hosp_info);
+
                         // add marker for user's location - for relative context/usability
                         var marker_user = new google.maps.Marker({
                             position: { lat: parseFloat(lat_value), lng: parseFloat(long_value)},
@@ -375,14 +315,13 @@
                         $("#instructions").html("<br>Click on the red hospital pins to view the hospital's address");
 
                     } else if (request.readyState == 4 && request.status != 200) {
-                        document.getElementById("form-div").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
+                        document.getElementById("errors").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
                     
                     } else if (request.readyState == 3) {
-                        document.getElementById("form-div").innerHTML = "Too soon!  Try again";
+                    //     document.getElementById("errors").innerHTML = "Too soon!  Try again";
                     }
                 }
             }
-    
 
         </script>
 
@@ -406,44 +345,54 @@
 
 
     <div class="flex-container" style=" border: 2px solid #1DA1F2">    
-        <!-- padding: 50px; -->
+
+        <!-- form with autocomplete -->
         <div id="form-div" style=" margin-right: 50px;">
-            <!-- padding-left: 75px; -->
             <form name="numbers-form" > 
-                <p class="field_title">Street Address&#42;</p>
-                    <input id="street_address" name="street_address">
-
-                <p class="field_title">City&#42;</p>
-                    <input id="city" name="city">
-
-                <p class="field_title">State&#42;</p>
-                    <div id="states"></div>
-
-                <p class="field_title">Zip Code&#42;</p>
-                    <input id="zip" name="zip">
-
-                <p class="field_title">Number of Hospitals&#42;</p>
+                <!-- autocomplete text area -->
+                <p class="field_title">Address&#42;</p>
+                <input id="searchTextField">
+                
+                <div id="input-fields" >
+                    <p class="field_title">Number of Hospitals&#42;</p>
                     <input id="n_hospitals" name="n_hospitals">
+                    
+                    <p class="field_title">Email Address</p>
+                    <input id="email-address" name="email-address">
 
-                <p class="field_title">Email Address</p>
-                <input id="email-address" name="email-address">
+                </div>
+                <div id="inlineButtons">
+                    <span id="add-button1">
+                        <input class="button" id="button1" type="button" value="View Results">
+                        
+                    </span>
+                    <span id="add-button2">
+                        <input class="button" id="button2" type="reset" value="Reset">
+                    </span>
+                </div>
+                
+             
 
                 <br/><br />
-
-                <input id="button" type="button" value="View Results" >
             </form>
         </div>
 
+        <!-- hospital results -->
+        <div id="results" style="margin-right: 15px;"></div>
+        <div id="errors"></div>
+
+        
+        <!-- map -->
         <div style="width: 100%; max-width: 800px; height: 500px;">
             <div id="map"></div>
             <div id="instructions" style="text-align: center;"></div>
         </div>
 
-    </div>
-    
-   
 
-    <!-- <div id="hospital" style="text-align: center"></div> -->
+
+    </div>
+        
+   
     </br></br></br></br>
 
     <div style="text-align: center;">
@@ -460,7 +409,8 @@
     
     <!-- Load the Google Map -->
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I&callback=initMap"></script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I&libraries=places&callback=initMap"></script>
+        <!--  -->
     </body>
     
     </html>
