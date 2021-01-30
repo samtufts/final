@@ -18,7 +18,7 @@ var hospitaldb = undefined;
 const ZIPCODE_API_URL = "https://public.opendatasoft.com/api/records/1.0/search" 
 
 /* Sam's Google API keys */
-const GOOGLE_API_PUBLIC_KEY  = "AIzaSyAg26nFAerS2R5la5jCQVBjps6GihQ_M2I";
+const GOOGLE_API_PUBLIC_KEY  = "****";
 
 /* Twitter info: @PPE_Donations, foreverdevtesting1@gmail.com */
 const TWITTER_QUERY_DELTATIME     = 22;
